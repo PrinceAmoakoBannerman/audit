@@ -21,7 +21,8 @@
       "Bash(echo \"EXIT: $?\")",
       "Bash(sleep 2; cat /tmp/vite-dev3.log)",
       "Read(//tmp/**)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git push *)"
     ]
   }
 }

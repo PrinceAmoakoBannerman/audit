@@ -189,7 +189,10 @@ export function generateCoverPage(reportInfo: ReportInfo, logoBytes?: Uint8Array
 //    right-click → "Update Field" / F9 otherwise).
 // ---------------------------------------------------------------------------
 
-export function generateTableOfContentsSection(): (Paragraph | TableOfContents)[] {
+export function generateTableOfContentsSection(
+  context: ReportBuildContext,
+  areaLetters: Map<string, string>,
+): (Paragraph | TableOfContents)[] {
   return [
     heading('TABLE OF CONTENTS', HeadingLevel.HEADING_1),
     new Paragraph({
@@ -207,6 +210,7 @@ export function generateTableOfContentsSection(): (Paragraph | TableOfContents)[
       hyperlink: true,
       headingStyleRange: '1-3',
       stylesWithLevels: [new StyleLevel('Heading1', 1), new StyleLevel('Heading2', 2), new StyleLevel('Heading3', 3)],
+      cachedEntries: buildTocEntries(context, areaLetters).map((e) => ({ title: e.title, level: e.level })),
     }),
     pageBreak(),
   ];
@@ -535,6 +539,26 @@ function sheetConfigForArea(sheetConfigs: SheetConfig[], findings: Finding[], ar
   return sheetConfigs.find((c) => c.sheetName === match.sheetName);
 }
 
+function areaHeadingLabel(letter: string, area: string, substationCode: string | undefined): string {
+  return substationCode ? `${letter}. ${area} (${substationCode})` : `${letter}. ${area}`;
+}
+
+/** Areas (in stable letter order) that have at least one finding of the given audit type — shared by
+ *  generateAppendix (to render the sections) and buildTocEntries (to pre-populate the same headings). */
+function areasForAuditType(
+  auditType: AuditType,
+  context: ReportBuildContext,
+  areaLetters: Map<string, string>,
+): { letter: string; area: string; cfg: SheetConfig | undefined }[] {
+  const relevant = context.findings.filter((f) => f.auditType === auditType);
+  const orderedAreas = [...areaLetters.keys()].filter((area) => relevant.some((f) => f.area === area));
+  return orderedAreas.map((area) => ({
+    letter: areaLetters.get(area) ?? '?',
+    area,
+    cfg: sheetConfigForArea(context.sheetConfigs, context.findings, area),
+  }));
+}
+
 export function generateAppendix(
   romanLabel: string,
   title: string,
@@ -552,13 +576,9 @@ export function generateAppendix(
     return out;
   }
 
-  const orderedAreas = [...areaLetters.keys()].filter((area) => relevant.some((f) => f.area === area));
-  orderedAreas.forEach((area) => {
-    const letter = areaLetters.get(area) ?? '?';
+  areasForAuditType(auditType, context, areaLetters).forEach(({ letter, area, cfg }) => {
     const areaFindings = relevant.filter((f) => f.area === area);
-    const cfg = sheetConfigForArea(context.sheetConfigs, context.findings, area);
-    const label = cfg?.substationCode ? `${letter}. ${area} (${cfg.substationCode})` : `${letter}. ${area}`;
-    out.push(heading(label, HeadingLevel.HEADING_2));
+    out.push(heading(areaHeadingLabel(letter, area, cfg?.substationCode), HeadingLevel.HEADING_2));
     if (cfg?.auditDay) {
       out.push(paragraph(`${auditType} Audit — ${cfg.auditDay}`, { align: AlignmentType.LEFT }));
     }
@@ -567,6 +587,56 @@ export function generateAppendix(
   });
 
   return out;
+}
+
+/**
+ * Pre-computed TOC entries, in the exact order/text the real headings appear in the document.
+ * A brand-new Word field has no cached result, so any viewer that doesn't run Word's field engine
+ * (or a Word that isn't set to auto-update fields) would otherwise show a blank Table of Contents —
+ * this keeps the outline visible everywhere, with real page numbers filled in once Word updates the
+ * field (see `features.updateFields` on the Document).
+ */
+function buildTocEntries(context: ReportBuildContext, areaLetters: Map<string, string>): { title: string; level: number }[] {
+  const entries: { title: string; level: number }[] = [];
+  const add = (title: string, level: number) => entries.push({ title, level });
+
+  add('TABLE OF CONTENTS', 1);
+  add('ACKNOWLEDGEMENT', 1);
+  add('LIST OF ABBREVIATIONS', 1);
+  add('EXECUTIVE SUMMARY', 1);
+  add('1.0 Introduction', 1);
+  add('1.1 Composition of Team', 2);
+  add('1.2 Aims and Objectives', 2);
+  add('1.3 Scope of Audit', 2);
+  add('1.4 Critical Technical Audit Observations', 2);
+  add('1.5 Critical Safety Audit Observations', 2);
+  add('OVERALL CONDITION OF EQUIPMENT', 1);
+  add('2.0 General Condition', 2);
+  add('2.1 Power Transformers, Auto Transformers and Reactors', 2);
+  add('2.2 Other Major Substation Equipment', 2);
+  add('2.3 Battery Rooms and Communication Equipment', 2);
+  add('2.4 Safety Assessment', 2);
+  add('2.4.1 Safety Accomplishment', 3);
+  add('2.4.2 Operating Standards', 3);
+  add('2.4.3 Fire Protection', 3);
+
+  const appendices: { roman: string; title: string; auditType: AuditType }[] = [
+    { roman: 'APPENDIX I', title: 'TECHNICAL AUDIT FINDINGS AND RECOMMENDATION', auditType: 'Technical' },
+    { roman: 'APPENDIX II', title: 'SAFETY AUDIT FINDINGS & RECOMMENDATION', auditType: 'Safety' },
+    { roman: 'APPENDIX III', title: 'FIRE SAFETY AUDIT FINDINGS AND RECOMMENDATIONS', auditType: 'Fire' },
+  ];
+  appendices.forEach(({ roman, title, auditType }) => {
+    add(roman, 1);
+    add(title, 1);
+    areasForAuditType(auditType, context, areaLetters).forEach(({ letter, area, cfg }) => {
+      add(areaHeadingLabel(letter, area, cfg?.substationCode), 2);
+    });
+  });
+
+  add('APPENDIX IV', 1);
+  add('PICTURES OF CRITICAL FINDINGS', 1);
+
+  return entries;
 }
 
 // ---------------------------------------------------------------------------
@@ -643,7 +713,7 @@ export async function generateReportDocx(context: ReportBuildContext): Promise<B
 
   const children: (Paragraph | Table | TableOfContents)[] = [
     ...generateCoverPage(context.reportInfo, logoBytes),
-    ...generateTableOfContentsSection(),
+    ...generateTableOfContentsSection(context, areaLetters),
     ...generateAcknowledgement(context.reportInfo),
     ...generateAbbreviations(context.reportInfo),
     ...generateExecutiveSummary(context),

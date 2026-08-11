@@ -182,12 +182,13 @@ calls — this app works fully offline once loaded.
 
 ## Known limitations / next steps
 
-- The Table of Contents is a real Word field with `<w:updateFields/>` set in
-  the document settings, so Word updates it (and populates real page
-  numbers) automatically on open. Non-Word viewers that don't honor that
-  setting (e.g. some online viewers) may show it blank until a manual
-  "Update Field" — a note to that effect is printed above the TOC in the
-  generated document as a fallback.
+- The Table of Contents is a real Word field (so desktop Word recomputes
+  real page numbers automatically on open, via `<w:updateFields/>` in the
+  document settings), but it's also seeded with `cachedEntries` covering
+  every heading actually in the document — so it shows a complete, correctly
+  ordered outline immediately in *any* viewer (not just Word), even before
+  a field update runs. Only the page numbers themselves are filled in later
+  by Word; everything else is visible right away.
 - Photos are placed in a single "Pictures of Critical Findings" appendix
   rather than inline inside the findings tables (embedding images inside
   table cells that also need to paginate cleanly is significantly more
