@@ -182,10 +182,12 @@ calls — this app works fully offline once loaded.
 
 ## Known limitations / next steps
 
-- The Table of Contents needs one manual "Update Field" the first time a
-  reader opens the doc if their Word doesn't refresh fields automatically on
-  open (a note to that effect is printed above the TOC in the generated
-  document).
+- The Table of Contents is a real Word field with `<w:updateFields/>` set in
+  the document settings, so Word updates it (and populates real page
+  numbers) automatically on open. Non-Word viewers that don't honor that
+  setting (e.g. some online viewers) may show it blank until a manual
+  "Update Field" — a note to that effect is printed above the TOC in the
+  generated document as a fallback.
 - Photos are placed in a single "Pictures of Critical Findings" appendix
   rather than inline inside the findings tables (embedding images inside
   table cells that also need to paginate cleanly is significantly more

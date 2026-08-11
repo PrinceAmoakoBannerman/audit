@@ -20,7 +20,8 @@
       "Bash(npm run *)",
       "Bash(echo \"EXIT: $?\")",
       "Bash(sleep 2; cat /tmp/vite-dev3.log)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(git add *)"
     ]
   }
 }

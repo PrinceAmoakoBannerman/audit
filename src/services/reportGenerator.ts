@@ -199,7 +199,7 @@ export function generateTableOfContentsSection(): (Paragraph | TableOfContents)[
           italics: true,
           size: 18,
           color: '888888',
-          text: 'Page numbers below populate when this field is updated — right-click it and choose "Update Field" (or press Ctrl+A then F9) if Word doesn’t refresh it automatically on open.',
+          text: 'Page numbers below populate automatically when this document is opened in Word. If you ever need to refresh them manually (e.g. after editing the document), right-click the table and choose "Update Field", or press Ctrl+A then F9.',
         }),
       ],
     }),
@@ -691,6 +691,7 @@ export async function generateReportDocx(context: ReportBuildContext): Promise<B
   ];
 
   const doc = new Document({
+    features: { updateFields: true },
     numbering: {
       config: [
         {
