@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .input {
+    @apply w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-navy-600 focus:outline-none focus:ring-1 focus:ring-navy-600;
+  }
+  .btn-secondary {
+    @apply rounded-md border border-navy-600 px-3 py-1.5 font-medium text-navy-700 transition-colors hover:bg-navy-50;
+  }
+}

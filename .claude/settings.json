@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(node 'C:\\\\Users\\\\princ\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-princ-Desktop-audit\\\\af9812f2-96bf-48d5-81e4-b9196a40b426\\\\scratchpad/make-test-xlsx.js')",
+      "Bash(node 'C:\\\\Users\\\\princ\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-princ-Desktop-audit\\\\af9812f2-96bf-48d5-81e4-b9196a40b426\\\\scratchpad/make-test-xlsx.js' --require-from-here)",
+      "Bash(node -e ' *)",
+      "Bash(cp 'C:\\\\Users\\\\princ\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-princ-Desktop-audit\\\\af9812f2-96bf-48d5-81e4-b9196a40b426\\\\scratchpad/make-test-xlsx.js' c:/Users/princ/Desktop/audit/make-test-xlsx.tmp.cjs)",
+      "Bash(node make-test-xlsx.tmp.cjs)",
+      "Bash(rm \"c:/Users/princ/Desktop/audit/make-test-xlsx.tmp.cjs\")",
+      "Bash(node 'C:\\\\Users\\\\princ\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-princ-Desktop-audit\\\\af9812f2-96bf-48d5-81e4-b9196a40b426\\\\scratchpad/drive.js')",
+      "Bash(cp 'C:\\\\Users\\\\princ\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-princ-Desktop-audit\\\\af9812f2-96bf-48d5-81e4-b9196a40b426\\\\scratchpad/drive.js' c:/Users/princ/Desktop/audit/drive.tmp.cjs)",
+      "Bash(node drive.tmp.cjs)",
+      "Bash(soffice --version)",
+      "Bash(cp 'C:\\\\Users\\\\princ\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-princ-Desktop-audit\\\\af9812f2-96bf-48d5-81e4-b9196a40b426\\\\scratchpad/validate-xml.js' c:/Users/princ/Desktop/audit/validate-xml.tmp.cjs)",
+      "Bash(node validate-xml.tmp.cjs)",
+      "Bash(rm \"c:/Users/princ/Desktop/audit/validate-xml.tmp.cjs\")",
+      "Bash(npm install *)",
+      "Bash(npm audit *)",
+      "Bash(npm run *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(sleep 2; cat /tmp/vite-dev3.log)",
+      "Read(//tmp/**)"
+    ]
+  }
+}
