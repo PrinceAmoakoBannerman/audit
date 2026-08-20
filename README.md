@@ -153,6 +153,20 @@ data (Acknowledgement, List of Abbreviations, Recurring Themes, and the
 the Report Information panel, pre-filled with generic starter text — the app
 never invents analysis of your data on your behalf.
 
+Three of those fields (2.4.1 Safety Accomplishment, 2.4.2 Operating
+Standards, 2.4.3 Fire Protection) additionally have an "Auto-fill from data"
+button (`src/utils/autoDraft.ts`) that computes a draft from the real
+findings — accomplishment stats for 2.4.1, a keyword match on "training" in
+finding/recommendation text for 2.4.2, and the actual Fire-type findings (or
+a "not assessed" note if there are none) for 2.4.3. It only ever restates
+real numbers or genuinely matched text, never inferred analysis, and it
+fills the same plain textarea you can otherwise type into — nothing is
+locked, and clicking it again overwrites with a fresh draft. The other four
+narrative fields (General Condition, Power Transformers, Other Equipment,
+Battery Rooms) stay manual-only, since spotting their recurring themes
+requires real judgment across all the findings, not just a stat or a
+keyword match.
+
 To change how "resolved" vs "outstanding" is decided, or how the weighted
 percentage is computed, edit `classifyStatus` / `STATUS_WEIGHTS` in
 `src/services/auditCalculator.ts` — nothing else needs to change.

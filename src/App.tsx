@@ -279,7 +279,12 @@ export default function App() {
             )}
 
             <Section>
-              <ReportInformation info={reportInfo} onChange={(patch) => setReportInfo((prev) => ({ ...prev, ...patch }))} />
+              <ReportInformation
+                info={reportInfo}
+                onChange={(patch) => setReportInfo((prev) => ({ ...prev, ...patch }))}
+                findings={findings}
+                stats={stats}
+              />
             </Section>
 
             <Section>

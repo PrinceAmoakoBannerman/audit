@@ -1,11 +1,14 @@
-import type { Abbreviation, ReportInfo } from '../types/audit';
+import type { Abbreviation, Finding, ReportInfo, StatsBreakdown } from '../types/audit';
+import { draftFireProtection, draftOperatingStandards, draftSafetyAccomplishment } from '../utils/autoDraft';
 
 interface ReportInformationProps {
   info: ReportInfo;
   onChange: (patch: Partial<ReportInfo>) => void;
+  findings: Finding[];
+  stats: StatsBreakdown;
 }
 
-export default function ReportInformation({ info, onChange }: ReportInformationProps) {
+export default function ReportInformation({ info, onChange, findings, stats }: ReportInformationProps) {
   const updateObjective = (index: number, value: string) => {
     const next = [...info.objectives];
     next[index] = value;
@@ -224,21 +227,39 @@ export default function ReportInformation({ info, onChange }: ReportInformationP
             onChange={(e) => onChange({ batteryRoomsText: e.target.value })}
           />
         </Field>
-        <Field label="2.4.1 Safety Accomplishment">
+        <Field
+          label="2.4.1 Safety Accomplishment"
+          onAutoFill={() =>
+            onChange({ safetyAccomplishmentText: draftSafetyAccomplishment(stats.byAuditType.Safety, info.year) })
+          }
+        >
           <textarea
             className="input min-h-[80px]"
             value={info.safetyAccomplishmentText}
             onChange={(e) => onChange({ safetyAccomplishmentText: e.target.value })}
           />
         </Field>
-        <Field label="2.4.2 Operating Standards">
+        <Field
+          label="2.4.2 Operating Standards"
+          onAutoFill={() => onChange({ operatingStandardsText: draftOperatingStandards(findings) })}
+        >
           <textarea
             className="input min-h-[80px]"
             value={info.operatingStandardsText}
             onChange={(e) => onChange({ operatingStandardsText: e.target.value })}
           />
         </Field>
-        <Field label="2.4.3 Fire Protection">
+        <Field
+          label="2.4.3 Fire Protection"
+          onAutoFill={() =>
+            onChange({
+              fireProtectionText: draftFireProtection(
+                findings.filter((f) => f.auditType === 'Fire'),
+                info.year,
+              ),
+            })
+          }
+        >
           <textarea
             className="input min-h-[80px]"
             value={info.fireProtectionText}
@@ -258,10 +279,32 @@ export default function ReportInformation({ info, onChange }: ReportInformationP
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+  onAutoFill,
+}: {
+  label: string;
+  children: React.ReactNode;
+  onAutoFill?: () => void;
+}) {
   return (
     <label className="block">
-      <span className="mb-1 block text-sm font-medium text-gray-700">{label}</span>
+      <span className="mb-1 flex items-center justify-between">
+        <span className="text-sm font-medium text-gray-700">{label}</span>
+        {onAutoFill && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              onAutoFill();
+            }}
+            className="btn-secondary text-xs"
+          >
+            Auto-fill from data
+          </button>
+        )}
+      </span>
       {children}
     </label>
   );

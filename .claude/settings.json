@@ -22,7 +22,8 @@
       "Bash(sleep 2; cat /tmp/vite-dev3.log)",
       "Read(//tmp/**)",
       "Bash(git add *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(sleep 2; cat /tmp/vite-dev6.log)"
     ]
   }
 }
